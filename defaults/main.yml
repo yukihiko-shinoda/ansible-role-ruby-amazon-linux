@@ -1,0 +1,4 @@
+---
+ruby_rbenv_default_ruby_version: 2.5.1
+ruby_install_rails: no
+ruby_install_infra_testing_tools: no

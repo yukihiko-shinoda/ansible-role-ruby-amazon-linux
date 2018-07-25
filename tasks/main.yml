@@ -1,0 +1,61 @@
+---
+- name: deploy rbenv
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    # Installation directory: @see http://www.itmedia.co.jp/help/howto/linux/0007master/14/04.html
+    dest: /opt/rbenv
+
+- name: deploy rbenv
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    # Installation directory: @see http://www.itmedia.co.jp/help/howto/linux/0007master/14/04.html
+    dest: /opt/rbenv/plugins/ruby-build
+
+- name: set profile
+  template:
+    src: rbenv.sh.j2
+    dest: /etc/profile.d/rbenv.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: install dependency of ruby
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - openssl-devel
+    - readline-devel
+    - zlib-devel
+
+- name: install default ruby
+  command: bash -lc 'rbenv install {{ ruby_rbenv_default_ruby_version }}'
+  args:
+    creates: /opt/rbenv/versions/{{ ruby_rbenv_default_ruby_version }}
+
+- name: set default ruby version
+  command: bash -lc 'rbenv global {{ ruby_rbenv_default_ruby_version }}'
+
+- name: install rails
+  gem:
+    name: '{{ item.name }}'
+    version: '{{ item.version }}'
+    executable: /opt/rbenv/shims/gem
+    user_install: False
+  with_items:
+    - name: bundler
+      version: '{{ ruby_bundler_version }}'
+    - name: rails
+      version: '{{ ruby_rails_version }}'
+  when: ruby_install_rails
+
+- name: install infra testing tools
+  gem:
+    name: '{{ item }}'
+    executable: /opt/rbenv/shims/gem
+    user_install: False
+  with_items:
+    - serverspec
+    - infrataster
+    - rake
+    - capybara
+  when: ruby_install_infra_testing_tools
