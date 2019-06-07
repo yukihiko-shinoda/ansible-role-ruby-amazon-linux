@@ -1,5 +1,5 @@
 ---
-ruby_rbenv_default_ruby_version: 2.6.2
+ruby_rbenv_default_ruby_version: 2.6.3
 ruby_install_rails: no
 ruby_install_infra_testing_tools: no
 ruby_bundler_version: 2.0.1
